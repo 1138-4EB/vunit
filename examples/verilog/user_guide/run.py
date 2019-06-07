@@ -9,7 +9,7 @@ SystemVerilog User Guide
 ------------------------
 
 The most minimal VUnit SystemVerilog project covering the basics of
-the :ref:`User Guide <user_guide>`.
+the :ref:`user_guide`.
 """
 
 from pathlib import Path

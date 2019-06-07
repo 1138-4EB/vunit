@@ -14,7 +14,13 @@ import sys
 from sys import argv
 from shutil import copyfile
 from create_release_notes import create_release_notes
-from docs_utils import examples, get_theme
+
+import json
+from docs_utils import (
+    examples,
+    copy_common,
+    get_btdpy
+)
 
 
 DROOT = Path(__file__).parent.parent / 'docs'
@@ -24,13 +30,30 @@ def main():
     """
     Build documentation/website
     """
-    create_release_notes()
+    docs = str(Path(__file__).parent / '..' / 'docs')
+    get_btdpy(docs)
+    sys.path.append(docs)
+    import btd
+    btd.get_theme()
+    with str(Path(__file__).parent / '..' / 'docs' / 'context.json').open("w") as fptr:
+        json.dump({
+            'slug_user': 'VUnit',
+            'slug_repo': 'vunit',
+            'slug_path': 'master/docs/',
+            'current_version': 'master',
+        }, fptr)
+    # btd.custom_last()
+    del sys.modules["btd"]
+    sys.path.remove(docs)
+
+    copy_common()
     examples()
     copyfile(str(DROOT / '..' / 'LICENSE.rst'), str(DROOT / 'license.rst'))
     get_theme(
         DROOT,
         "https://codeload.github.com/buildthedocs/sphinx.theme/tar.gz/v0"
     )
+    create_release_notes()
     check_call(
         [
             sys.executable,

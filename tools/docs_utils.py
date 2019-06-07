@@ -5,18 +5,52 @@
 # Copyright (c) 2014-2020, Lars Asplund lars.anders.asplund@gmail.com
 
 """
-Helper functions to generate examples.rst from docstrings in run.py files
+Helper functions to get/generate sources for the documentation
 """
 
 import sys
+import json
 import inspect
-
-from os import listdir, remove
 from pathlib import Path
+from os import listdir, remove
 from subprocess import check_call
-
+from shutil import copyfile
+from urllib.request import urlretrieve
 
 ROOT = Path(__file__).parent.parent / "docs"
+
+
+def get_btdpy(location):
+    btdpy = Path(location) / "btd.py"
+    if not btdpy.is_file():
+        urlretrieve("https://github.com/buildthedocs/btd/raw/py/btd.py", str(btdpy))
+
+
+def copy_common():
+    """
+    Copy RST sources used outside 'docs' into 'docs' and fix paths accordingly
+    """
+    with (Path(ROOT) / ".." / "README.rst").open("r") as fptr:
+        data = fptr.readlines()
+        rm = []
+        for i, s in enumerate(data):
+            if "<!-- GHONLY -->" in s:
+                rm += [i - 1]
+            elif "<!-- /GHONLY -->" in s:
+                rm += [i + 1]
+        for x in range(int(len(rm) / 2)):
+            del data[rm[2 * x] : rm[2 * x + 1]]
+        with (Path(ROOT) / "readme.rst").open("w") as fptr:
+            fptr.writelines(data)
+    check_call(
+        [
+            "sed",
+            "-i",
+            "s#\./docs/_static/img/#_static/img/#g",
+            str(Path(ROOT) / "readme.rst"),
+        ]
+    )
+    copyfile(str(Path(ROOT) / ".." / "LICENSE.rst"), str(Path(ROOT) / "license.rst"))
 
 
 def examples():
@@ -79,18 +113,3 @@ def _get_eg_doc(location: Path, ref):
 
     title = "`%s <%s/>`_" % (eg_doc.split("---", 1)[0][0:-1], ref)
     return "\n".join([title, "-" * len(title), eg_doc.split("---\n", 1)[1], "\n"])
-
-
-def get_theme(path: Path, url: str):
-    """
-    Check if the theme is available locally, retrieve it with curl and tar otherwise
-    """
-    tpath = path / "_theme"
-    if not tpath.is_dir() or not (tpath / "theme.conf").is_file():
-        if not tpath.is_dir():
-            tpath.mkdir()
-        zpath = path / "theme.tgz"
-        if not zpath.is_file():
-            check_call(["curl", "-fsSL", url, "-o", str(zpath)])
-        tar_cmd = ["tar", "--strip-components=1", "-C", str(tpath), "-xvzf", str(zpath)]
-        check_call(tar_cmd)

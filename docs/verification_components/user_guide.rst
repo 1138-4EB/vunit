@@ -1,41 +1,21 @@
 .. _vc_library:
 
 Verification Component Library
-===============================
+==============================
 
-.. note:: This library is released as a *BETA* version. This means
-          non-backwards compatible changes are still likely based on
-          feedback from our users.
+.. note:: This is the first non-beta version of this library. Compared
+  to previous beta versions, VCs are now split into several repositories
+  to easen distributed maintenance.
 
-The VUnit Verification Component Library (VCL) contains a number of
-useful :ref:`Verification Components <verification_components>` (VC)
-as well as a set of utilities for writing your own verification
-component. Verification components allow a better overview in the test
+VUnit contains a number of useful :ref:`Verification Components <verification_components>`
+(VC) as well as a set of utilities for writing your own verification
+components. Verification components allow a better overview in the test
 bench by raising the abstraction level of bus transactions. Even if
-you do not need the advanced features that VCs offer you may still
-benefit from using per-verified models of an AXI-bus instead of
-re-implementing it yourself.
+you do not need the advanced features that Verification Components (VCs)
+offer, you may still benefit from using pre-verified models of e.g. an
+AXI-bus instead of re-implementing it yourself.
 
-Included verification components (VCs):
-
-- Avalon Memory-Mapped master
-- Avalon Memory-Mapped slave
-- Avalon Streaming sink
-- Avalon Streaming source
-- AXI-Lite master
-- AXI read slave
-- AXI write slave
-- AXI stream master
-- AXI stream monitor
-- AXI stream protocol checker
-- AXI stream slave
-- RAM master
-- Wishbone master
-- Wishbone slave
-- UART master
-- UART slave
-
-In addition to VCs VUnit also has the concept of :ref:`Verification
+All of the VCs are built on top of :ref:`Verification
 Component Interfaces <verification_component_interfaces>` (VCI). A
 single VC typically implements several VCIs. For example an AXI-lite
 VC or RAM master VC can support the same generic bus master and
@@ -94,10 +74,10 @@ Verification Components
 -----------------------
 
 A verification component (VC) is an entity that is normally connected
-to the DUT via a bus signal interface such as AXI-Lite. The main test
-sequence in the test bench sends messages to the VCs that will then
-perform the actual bus signal transactions. The benefit of this is
-both to raise the abstraction level of the test bench as well as
+to the Design Under Test (DUT) via a bus signal interface such as AXI-Lite.
+The main test sequence in the test bench sends messages to the VCs that
+will then perform the actual bus signal transactions. The benefit of
+this is both to raise the abstraction level of the test bench as well as
 making it easy to have parallel activity on several bus interfaces.
 
 A VC typically has an associated package defining procedures for
@@ -105,3 +85,21 @@ sending to and receiving messages from the VC. Each VC instance is
 associated with a handle that is created in the test bench and set as
 a generic on the VC instantiation. The handle is given as and argument
 to the procedure calls to direct messages to the specfic VC instance.
+
+Except for `RAM master <BROKEN_LINK>`_, the VCs are neither included in
+the main VUnit repository nor provided in the :ref:`PyPi package <installing_pypi>`.
+However, the :ref:`cli` provides a ``Warehouse`` class with methods to
+automate the addition of third-party VC sources.
+
+List of known VCs:
+
+- Avalon:
+
+  - Memory-Mapped master
+  - Memory-Mapped slave
+  - Streaming sink
+  - Streaming source
+- Wishbone
+
+  - Master
+  - Slave

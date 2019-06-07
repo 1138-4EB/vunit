@@ -9,7 +9,7 @@ VHDL User Guide
 ---------------
 
 The most minimal VUnit VHDL project covering the basics of the
-:ref:`User Guide <user_guide>`.
+:ref:`user_guide`.
 """
 
 from pathlib import Path

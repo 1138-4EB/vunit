@@ -3,6 +3,7 @@
 import os
 import sys
 from pathlib import Path
+from json import loads
 
 # -- Sphinx Options -----------------------------------------------------------
 
@@ -39,9 +40,15 @@ release = ""
 
 language = None
 
+# There are two options for replacing |today|: either, you set today to some
+# non-false value, then it is used:
+# today = ''
+# Else, today_fmt is used as the format for a strftime call.
+# today_fmt = '%B %d, %Y'
+
 exclude_patterns = ["release_notes/*.*"]
 
-pygments_style = "sphinx"
+pygments_style = "stata-dark"
 
 todo_include_todos = False
 
@@ -56,6 +63,7 @@ html_theme_options = {
     "vcs_pageview_mode": "blob",
     "style_nav_header_background": "#0c479d",
     "home_breadcrumbs": False,
+    "prevnext_location": "bottom",
 }
 html_context = {
     "conf_py_path": "%s/" % Path(__file__).parent.name,
@@ -63,13 +71,22 @@ html_context = {
     "github_user": "VUnit",
     "github_repo": "vunit",
     "github_version": "master/",
+    "use_gfonts": True,
+    "description": "A test framework for HDL",
+    "copyright_extra": ' - <a href="mailto:vunitframework@gmail.com">VUnitFramework</a>',
 }
+
+ctx = Path(__file__).parent / "context.json"
+if ctx.is_file():
+    html_context.update(loads(ctx.open().read()))
 
 html_static_path = ["_static"]
 
-html_logo = str(Path(html_static_path[0]) / "VUnit_logo_175x175.png")
+html_logo = str(Path(html_static_path[0]) / img / "VUnit_banner_white_250.png")
 
 html_favicon = str(Path(html_static_path[0]) / "vunit.ico")
+
+html_last_updated_fmt = "%b %d, %Y"
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "VUnitDoc"
