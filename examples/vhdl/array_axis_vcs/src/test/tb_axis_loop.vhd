@@ -83,9 +83,11 @@ begin
 
     for y in 0 to height(m_I)-1 loop
       for x in 0 to width(m_I)-1 loop
+
         wait until rising_edge(clk);
         if x = width(m_I)-1 then last := '1'; else last := '0'; end if;
         push_axi_stream(net, master_axi_stream, std_logic_vector(to_signed(get(m_I, x, y), data_width)) , tlast => last);
+
       end loop;
     end loop;
 
@@ -107,11 +109,13 @@ begin
 
     for y in 0 to height(m_O)-1 loop
       for x in 0 to width(m_O)-1 loop
+
         pop_axi_stream(net, slave_axi_stream, tdata => o, tlast => last);
         if (x = width(m_O)-1) and (last='0') then
           error("Something went wrong. Last misaligned!");
         end if;
         set(m_O, x, y, to_integer(signed(o)));
+
       end loop;
     end loop;
 
@@ -128,7 +132,7 @@ begin
 
 --
 
-  uut_vc: entity work.vc_axis
+  uut_vc: entity work.vc_axis(synthetic)
   generic map (
     m_axis => master_axi_stream,
     s_axis => slave_axi_stream,
